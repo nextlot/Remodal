@@ -39,6 +39,14 @@
     assert.ok($elem.remodal(), 'instance exists');
   });
 
+  QUnit.test('Existing wrapper', function(assert) {
+    var $modal = $('[data-remodal-id=modal5]');
+    var $existingWrapper = $modal.parent();
+    var remodal = $modal.remodal();
+
+    assert.ok($existingWrapper.get(0) === remodal.$wrapper.get(0), 'existing wrapper was used');
+  });
+
   QUnit.asyncTest('Hash tracking', function(assert) {
     $document.one('opened', '[data-remodal-id=modal]', function() {
       assert.ok(true, 'the modal is opened');
