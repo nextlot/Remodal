@@ -507,6 +507,7 @@
   function Remodal($modal, options) {
     var $body = $(document.body);
     var remodal = this;
+    var $existingWrapper;
 
     remodal.settings = $.extend({}, DEFAULTS, options);
     remodal.index = $[PLUGIN_NAME].lookup.push(remodal) - 1;
@@ -521,22 +522,29 @@
 
     remodal.$bg = $('.' + namespacify('bg')).addClass(namespacify('is', STATES.CLOSED));
 
-    remodal.$modal = $modal
-      .addClass(
-        NAMESPACE + ' ' +
-        namespacify('is-initialized') + ' ' +
+    remodal.$modal = $modal;
+    remodal.$modal.addClass(
+      NAMESPACE + ' ' +
+      namespacify('is-initialized') + ' ' +
+      remodal.settings.modifier + ' ' +
+      namespacify('is', STATES.CLOSED));
+    $existingWrapper = remodal.$modal.parent('.' + namespacify('wrapper'));
+    if ($existingWrapper.length === 0) {
+      remodal.$wrapper = $('<div>')
+        .addClass(
+          namespacify('wrapper') + ' ' +
+          remodal.settings.modifier + ' ' +
+          namespacify('is', STATES.CLOSED))
+        .hide()
+        .append(remodal.$modal);
+      $body.append(remodal.$wrapper);
+    } else {
+      remodal.$wrapper = $existingWrapper;
+      remodal.$wrapper.addClass(
         remodal.settings.modifier + ' ' +
-        namespacify('is', STATES.CLOSED))
-      .attr('tabindex', '-1');
-
-    remodal.$wrapper = $('<div>')
-      .addClass(
-        namespacify('wrapper') + ' ' +
-        remodal.settings.modifier + ' ' +
-        namespacify('is', STATES.CLOSED))
-      .hide()
-      .append(remodal.$modal);
-    $body.append(remodal.$wrapper);
+        namespacify('is', STATES.CLOSED)
+      );
+    }
 
     // Add the event listener for the close button
     remodal.$wrapper.on('click.' + NAMESPACE, '[data-' + PLUGIN_NAME + '-action="close"]', function(e) {
